@@ -80,6 +80,8 @@ def preprocess(dataframe_csvpath, cols_x, cols_y, window_in, window_out, data_di
     x_test[:,:,0:3] = x_test[:,:,0:3] / popu_size
     y_train = y_train / popu_size 
     y_test =  y_test / popu_size
+    y_train = y_train.reshape((-1, 3*1))
+    y_test = y_test.reshape((-1, 3*1))
     win_len_per_ser = len_ser - window_in - window_out + 1
     
     return np.array(x_train), np.array(y_train), np.array(x_test), np.array(y_test), len_ser, win_len_per_ser
