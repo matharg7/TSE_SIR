@@ -28,7 +28,7 @@ def preprocess(dataframe_csvpath, cols_x, cols_y, window_in, window_out, data_di
     """
   
     #Loading .CSV file and creating dataframe
-    df = pd.read_csv('drive/MyDrive/Colab Notebooks/new_data2.csv')   
+    df = pd.read_csv(dataframe_csvpath)   
     len_ser = len(df[df['Series_No'] == 1])
 
     #randomly shuffle different series
@@ -85,7 +85,7 @@ def preprocess(dataframe_csvpath, cols_x, cols_y, window_in, window_out, data_di
     return np.array(x_train), np.array(y_train), np.array(x_test), np.array(y_test), len_ser, win_len_per_ser
 
 
-def make_future_preds(x_test, y_test, model, len_ser, win_len_per_ser, window_in = 7, window_out = 1):
+def predictions(x_test, y_test, model, len_ser, win_len_per_ser, window_in = 7, window_out = 1):
     """
     Makes Predictions for time series data using the model trained.   
     
