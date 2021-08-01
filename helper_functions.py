@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import matplotlib as plt
 
 def preprocess(dataframe_csvpath, cols_x, cols_y, window_in, window_out, data_div_frac, popu_size):
 
@@ -128,19 +129,62 @@ def predictions(x_test, y_test, model, len_ser, win_len_per_ser, window_in = 7, 
             #print('win', win)
             win = win[:,window_out:,:] # updating win by removing the starting elements
             #print('new_win for next iter', win)
-
-    #print(np.array(y_pred)) 
+ 
     y_pred = np.array(y_pred)
-    #print(y_pred.shape)
-    #print(y_test.shape)
-    
+    assert (y_pred.shape == y_test.shape)
+
     mae = tf.reduce_sum(tf.keras.metrics.mean_absolute_error(y_pred, y_test))
-    print(mae)
+    print("The mean absolute error is: ", mae)
+
     return y_pred, mae
 
 
 def is_gpu_working():
+    """
+    To check if GPU is available
+    """
+    
     if len(tf.config.list_physical_devices('GPU')):
         return True
     else:
         return False
+
+def visualize(y_test, y_pred, x_test, num_plots, num_win_ser, cols_y, col_idx):
+    """
+    Visualize a particular column of Y_pred anf Y_test for a particular series
+    
+    Arguments:
+    y_test -- The test y array
+    y_pred -- The prediction array
+    x_test -- The test x array
+    num_plots -- Number of plots to show(number of differnt series)
+    num_win_ser -- Number of windows in a particular series
+    cols_y -- List of stings with column names in y
+    col_idx -- Column index to plot
+
+
+    """
+    
+    
+    ser_idx = [i for i in range(0, len(y_test), num_win_ser)]
+    if num_plots > len(ser_idx):
+        print("Too many plots, reduce the mumber")
+    else:
+        indx = ser_idx[0:num_plots]
+        days = range(num_win_ser)
+        for idx in indx:
+            CR = x_test[idx][0][3]
+            pred = y_pred[idx : idx+num_win_ser, col_idx]
+            true = y_test[idx : idx+num_win_ser, col_idx]
+            
+            plt.title("Y_True V/S Y_Pred, CR: "+ str(CR))
+            plt.xlabel('Days')
+            plt.ylabel(cols_y[col_idx])
+            
+            plt.plot(days, pred, label = 'Pred')
+            plt.plot(days, true, label = 'True')
+            
+            plt.legend()
+            plt.show()
+            
+
