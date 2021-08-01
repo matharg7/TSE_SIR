@@ -80,8 +80,6 @@ def preprocess(dataframe_csvpath, cols_x, cols_y, window_in, window_out, data_di
     x_test[:,:,0:3] = x_test[:,:,0:3] / popu_size
     y_train = y_train / popu_size 
     y_test =  y_test / popu_size
-    y_train = y_train.reshape((-1, 3*1))
-    y_test = y_test.reshape((-1, 3*1))
     win_len_per_ser = len_ser - window_in - window_out + 1
     
     return np.array(x_train), np.array(y_train), np.array(x_test), np.array(y_test), len_ser, win_len_per_ser
@@ -133,13 +131,16 @@ def predictions(x_test, y_test, model, len_ser, win_len_per_ser, window_in = 7, 
 
     #print(np.array(y_pred)) 
     y_pred = np.array(y_pred)
-    print(y_pred.shape)
-    print(y_test.shape)
+    #print(y_pred.shape)
+    #print(y_test.shape)
     
     mae = tf.reduce_sum(tf.keras.metrics.mean_absolute_error(y_pred, y_test))
     print(mae)
     return y_pred, mae
 
 
-
-  
+def is_gpu_working():
+    if len(tf.config.list_physical_devices('GPU')):
+        return True
+    else:
+        return False
