@@ -120,12 +120,12 @@ def predictions(x_test, y_test, model, len_ser, win_len_per_ser, window_in = 7, 
         #print(win.shape)
         for j in range(num_win_per_ser): # prediction loop
             y_hat = model.predict(win) # predicting values wrt win variable
-            #print('y_hat', y_hat)  
+            #print('y_hat shape ', y_hat.shape)  
             y_pred.append(y_hat[0]) # add the value to y_pred
             #print('y_pred:', y_pred)
-            y_hat = tf.concat([y_hat, tf.fill(dims = (window_out, 1), value = CR)], axis = 1) # adding CR value y_hat for furter predictions
-            #print('cr added to y_hat', y_hat)
-            win = tf.concat([win, tf.expand_dims(y_hat, axis = 0)], axis = 1) # adding our prediction to win
+            y_hat = tf.concat([y_hat, tf.fill(dims = (1, window_out, 1), value = CR)], axis = 2) # adding CR value y_hat for furter predictions
+            #print('cr added to y_hat', y_hat)   
+            win = tf.concat([win, y_hat], axis = 1) # adding our prediction to win
             #print('win', win)
             win = win[:,window_out:,:] # updating win by removing the starting elements
             #print('new_win for next iter', win)
@@ -149,7 +149,7 @@ def is_gpu_working():
     else:
         return False
 
-def visualize(y_test, y_pred, x_test, num_plots, num_win_ser, cols_y, col_idx):
+def visualize(y_test, y_pred, x_test, window_out, num_plots, num_win_ser, cols_y, col_idx):
     """
     Visualize a particular column of Y_pred anf Y_test for a particular series
     
@@ -157,6 +157,7 @@ def visualize(y_test, y_pred, x_test, num_plots, num_win_ser, cols_y, col_idx):
     y_test -- The test y array
     y_pred -- The prediction array
     x_test -- The test x array
+    window_out -- len of output window
     num_plots -- Number of plots to show(number of differnt series)
     num_win_ser -- Number of windows in a particular series
     cols_y -- List of stings with column names in y
@@ -174,8 +175,8 @@ def visualize(y_test, y_pred, x_test, num_plots, num_win_ser, cols_y, col_idx):
         days = range(num_win_ser)
         for idx in indx:
             CR = x_test[idx][0][3]
-            pred = y_pred[idx : idx+num_win_ser, col_idx]
-            true = y_test[idx : idx+num_win_ser, col_idx]
+            pred = y_pred[idx : idx+num_win_ser, window_out -1, col_idx]
+            true = y_test[idx : idx+num_win_ser, window_out -1,  col_idx]
             
             plt.title("Y_True V/S Y_Pred, CR: "+ str(CR))
             plt.xlabel('Days')
@@ -186,5 +187,3 @@ def visualize(y_test, y_pred, x_test, num_plots, num_win_ser, cols_y, col_idx):
             
             plt.legend()
             plt.show()
-            
-
