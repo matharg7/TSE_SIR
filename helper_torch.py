@@ -139,7 +139,7 @@ def visualize_data(y_test, x_test, window_out, num_plots, num_win_ser, cols_y, c
         indx = ser_idx[0:num_plots]
         days = range(num_win_ser)
         for idx in indx:
-            CR = test_seq[idx][0][0][3]
+            CR = x_test[idx][0][3]
             #pred = y_pred[idx : idx+num_win_ser, window_out -1, col_idx]
             true = y_test[idx : idx+num_win_ser, window_out -1,  col_idx]
             
@@ -166,7 +166,7 @@ class TSD(Dataset):
         return torch.tensor(window), torch.tensor(target)
 
 
-def predictions(loader, model, win_len_per_ser, criterion, window_out = 1):
+def predictions(loader, model, win_len_per_ser, criterion,  device, window_out = 1 ):
     """
     Makes Predictions for time series data using the model trained.   
     
